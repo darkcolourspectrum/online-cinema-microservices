@@ -67,6 +67,25 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # User Profile Service
+  user-profile-service:
+    build: ./services/user-profile-service
+    ports:
+      - "8003:8003"
+    environment:
+      - DATABASE_URL=postgresql://profile_user:profile_password@postgres:5432/profile_db
+      - SERVICE_NAME=user-profile-service
+      - SERVICE_PORT=8003
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - MOVIE_SERVICE_URL=http://movie-service:8002
+      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production-2024
+      - JWT_ALGORITHM=HS256
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   # Nginx API Gateway
   nginx:
     image: nginx:alpine
@@ -77,6 +96,7 @@ services:
     depends_on:
       - auth-service
       - movie-service
+      - user-profile-service
     restart: unless-stopped
 
 volumes:
