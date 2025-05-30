@@ -113,6 +113,37 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Streaming Service
+  streaming-service:
+    build: ./services/streaming-service
+    ports:
+      - "8005:8005"
+    env_file:
+      - ./services/streaming-service/.env
+    environment:
+      - DATABASE_URL=postgresql://streaming_user:streaming_password@postgres:5432/streaming_db
+      - SERVICE_NAME=streaming-service
+      - SERVICE_PORT=8005
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - MOVIE_SERVICE_URL=http://movie-service:8002
+      - JWT_SECRET_KEY=r-R1wNVFS1f18q8fSBE0buQ52YftDHK56u3Xz1zkRMo=
+      - JWT_ALGORITHM=HS256
+      - STORAGE_PATH=/app/storage
+      - MAX_FILE_SIZE_MB=500
+      - ALLOWED_VIDEO_FORMATS=mp4,avi,mkv,mov,wmv,flv,webm
+      - ALLOWED_IMAGE_FORMATS=jpg,jpeg,png,webp
+      - DEFAULT_VIDEO_QUALITY=720p
+      - SUPPORTED_QUALITIES=480p,720p,1080p
+      - THUMBNAIL_WIDTH=320
+      - THUMBNAIL_HEIGHT=180
+    volumes:
+      - streaming_storage:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   # Nginx API Gateway
   nginx:
     image: nginx:alpine
@@ -125,7 +156,9 @@ services:
       - movie-service
       - user-profile-service
       - comments-service
+      - streaming-service
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  streaming_storage:

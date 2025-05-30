@@ -18,3 +18,8 @@ GRANT ALL PRIVILEGES ON DATABASE profile_db TO profile_user;
 CREATE USER comments_user WITH PASSWORD 'comments_password';
 CREATE DATABASE comments_db OWNER comments_user;
 GRANT ALL PRIVILEGES ON DATABASE comments_db TO comments_user;
+
+-- Streaming Service Database
+CREATE USER streaming_user WITH PASSWORD 'streaming_password';
+CREATE DATABASE streaming_db OWNER streaming_user;
+GRANT ALL PRIVILEGES ON DATABASE streaming_db TO streaming_user;
