@@ -36,9 +36,11 @@ services:
     build: ./services/auth-service
     ports:
       - "8001:8001"
+    env_file:
+      - ./services/auth-service/.env
     environment:
       - DATABASE_URL=postgresql://auth_user:auth_password@postgres:5432/auth_db
-      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production-2024
+      - JWT_SECRET_KEY=r-R1wNVFS1f18q8fSBE0buQ52YftDHK56u3Xz1zkRMo=
       - JWT_ALGORITHM=HS256
       - JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
       - SERVICE_NAME=auth-service
@@ -54,13 +56,15 @@ services:
     build: ./services/movie-service
     ports:
       - "8002:8002"
+    env_file:
+      - ./services/movie-service/.env
     environment:
       - DATABASE_URL=postgresql://movie_user:movie_password@postgres:5432/movie_db
       - SERVICE_NAME=movie-service
       - SERVICE_PORT=8002
       - DEBUG=true
       - AUTH_SERVICE_URL=http://auth-service:8001
-      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production-2024
+      - JWT_SECRET_KEY=r-R1wNVFS1f18q8fSBE0buQ52YftDHK56u3Xz1zkRMo=
       - JWT_ALGORITHM=HS256
     depends_on:
       postgres:
@@ -72,6 +76,8 @@ services:
     build: ./services/user-profile-service
     ports:
       - "8003:8003"
+    env_file:
+      - ./services/user-profile-service/.env
     environment:
       - DATABASE_URL=postgresql://profile_user:profile_password@postgres:5432/profile_db
       - SERVICE_NAME=user-profile-service
@@ -79,7 +85,28 @@ services:
       - DEBUG=true
       - AUTH_SERVICE_URL=http://auth-service:8001
       - MOVIE_SERVICE_URL=http://movie-service:8002
-      - JWT_SECRET_KEY=your-super-secret-jwt-key-change-this-in-production-2024
+      - JWT_SECRET_KEY=r-R1wNVFS1f18q8fSBE0buQ52YftDHK56u3Xz1zkRMo=
+      - JWT_ALGORITHM=HS256
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Comments Service
+  comments-service:
+    build: ./services/comments-service
+    ports:
+      - "8004:8004"
+    env_file:
+      - ./services/comments-service/.env
+    environment:
+      - DATABASE_URL=postgresql://comments_user:comments_password@postgres:5432/comments_db
+      - SERVICE_NAME=comments-service
+      - SERVICE_PORT=8004
+      - DEBUG=true
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - MOVIE_SERVICE_URL=http://movie-service:8002
+      - JWT_SECRET_KEY=r-R1wNVFS1f18q8fSBE0buQ52YftDHK56u3Xz1zkRMo=
       - JWT_ALGORITHM=HS256
     depends_on:
       postgres:
@@ -97,6 +124,7 @@ services:
       - auth-service
       - movie-service
       - user-profile-service
+      - comments-service
     restart: unless-stopped
 
 volumes:
